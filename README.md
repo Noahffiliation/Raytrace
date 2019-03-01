@@ -1,7 +1,7 @@
 # Raytrace Project
 This project involved filling psuedo code for a ray tracing algorithm. The script gets passed in a JSON object file and it draws the scene in png images.
 
-Recommend using pypy3 to get faster raytracing times.
+Recommend using [pypy3](https://pypy.org/download.html) to get faster raytracing times.
 
 ## Usage
 ```
