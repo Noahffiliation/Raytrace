@@ -5,5 +5,5 @@ Recommend using [pypy3](https://pypy.org/download.html) to get faster raytracing
 
 ## Usage
 ```
->>>path/to/pypy3 Raytrace.py scenes/01_sphere.json
+>>>path/to/pypy3 raytrace.py scenes/01_sphere.json
 ```
