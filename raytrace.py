@@ -90,7 +90,7 @@ def irradiance(scene:Scene, ray:Ray, iterations=0):
     # if not hit, return background
     if not intersection:
         return scene.background
-    
+
     # accumulate color starting with ambient
     final_color = Vector((0, 0, 0))
     final_color += scene.ambient * intersection.mat.kd
@@ -121,7 +121,7 @@ def irradiance(scene:Scene, ray:Ray, iterations=0):
             h = (ray_to_light.d + -ray.d)
             h /= h.length
             final_color += response * (intersection.mat.kd + intersection.mat.ks * max(0, n.dot(h)) ** intersection.mat.n) * max(0, (n.dot(direction)))
-        
+
     # create reflection ray
     # accumulate reflected light (recursive call) scaled by material reflection
     v = -ray.d
@@ -130,15 +130,15 @@ def irradiance(scene:Scene, ray:Ray, iterations=0):
     r = Ray(intersection.frame.o, rd)
     if iterations < 2:
         final_color += intersection.mat.kr * irradiance(scene, r, 5)
-    
+
     return final_color
-    
+
 
 # computes image of scene using raytracing
 @timed_call('raytrace') # <= reports how long this function took
 def raytrace(scene:Scene):
     image = Image(scene.resolution_width, scene.resolution_height)
-    
+
     o = scene.camera.frame.o
     x = scene.camera.frame.x
     y = scene.camera.frame.y
@@ -188,11 +188,15 @@ if len(sys.argv) < 2:
 for scene_filename in sys.argv[1:]:
     base,_ = os.path.splitext(scene_filename)
     image_filename = '%s.png' % base
-    
+
     print('Reading scene: %s' % scene_filename)
     print('Writing image: %s' % image_filename)
-    
+
     print('Raytracing...')
+    scene_filename = scene_filename.strip()
+    scene_filename = scene_filename.replace('..', '')
+    scene_filename = scene_filename.replace('/', os.path.sep).replace('\\', os.path.sep)
+    scene_filename = os.path.join(os.getcwd(), scene_filename)
     scene = scene_from_file(scene_filename)
     image = raytrace(scene)
     image.save(image_filename)
