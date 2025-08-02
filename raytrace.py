@@ -2,8 +2,8 @@ import os
 import sys
 import math
 
-from common.utils import put_your_code_here, timed_call
-from common.maths import Vector, Point, Normal, Ray, Direction, Frame, sqrt
+from common.utils import timed_call
+from common.maths import Vector, Ray, Frame
 from common.scene import Scene, Material, scene_from_file
 from common.image import Image
 
