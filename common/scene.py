@@ -47,7 +47,7 @@ class Surface:
         self.frame    = Frame()     # frame (origin and orientation)
         self.radius   = 1.0         # size of surface
         self.is_quad  = False       # True: quad
-        self.is_circle = False      # True: circle 
+        self.is_circle = False      # True: circle
         self.material = Material()  # reflective properties of surface
 
 
@@ -69,18 +69,18 @@ class Camera:
         self.height = 1.0       # image plane height
         self.dist   = 1.0       # distance from camera to center of image plane
         self.frame  = Frame()   # frame (origin and orientation)
-        
+
         self._eye = self._center = self._up = None # internal properties, set in update_frame
         # set up default eye,center,up and corresponding frame
         self.update_frame(eye=Point((0,0,1)), center=Point((0,0,0)), up=Direction((0,1,0)))
-    
+
     def update_frame(self, eye=None, center=None, up=None):
         ''' recomputes camera's frame based on eye,center,up '''
         if eye:    self._eye = eye
         if center: self._center = center
         if up:     self._up = up
         self.frame = Frame.lookat(self._eye, self._center, self._up)
-    
+
     ####################################################################
     # the following properties are used to wrap a call to update_frame #
     ####################################################################
@@ -88,12 +88,12 @@ class Camera:
     def eye(self): return self._eye
     @eye.setter
     def eye(self, eye): self.update_frame(eye=eye)
-    
+
     @property
     def center(self): return self._center
     @center.setter
     def center(self, center): self.update_frame(center=center)
-    
+
     @property
     def up(self): return self._up
     @up.setter
@@ -123,7 +123,7 @@ def scene_from_file(filename):
         if cls is Point:     return Point(data)
         if cls is Direction: return Direction(data)
         if cls is Normal:    return Normal(data)
-        
+
         # print('Creating %s' % str(cls))
         obj = cls()
         for k,v in data.items():
@@ -142,6 +142,6 @@ def scene_from_file(filename):
                 v = parse(v, ncls)
             setattr(obj, k, v)
         return obj
-    
+
     data = json.load(open(filename, 'rt'))
     return parse(data, Scene)

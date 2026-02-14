@@ -36,34 +36,34 @@ class Image:
         width,height,pixels,metadata = p.asRGBA8()
         pixels = [[v/255.0 for v in row] for row in pixels]
         return Image(width, height, pixels=pixels)
-    
+
     def __init__(self, width, height, pixels=None, default_color=(0,0,0,1)):
         self.width,self.height = width,height
-        
+
         # self.pixels uses "boxed row flat pixel" format
         if pixels is None:
             self.pixels = [[c for x in range(width) for c in default_color] for y in range(height)]
         else:
             self.pixels = pixels
-    
+
     def __setitem__(self, pos, color):
         x,y = pos
         if len(color) == 3: color = [color[0], color[1], color[2], 1]
         self.pixels[y][x*4:x*4+4] = color
-    
+
     def __getitem__(self, pos):
         x,y = pos
         return self.pixels[y][x*4:x*4+4]
-    
+
     def set(self, pos, color):
         x,y = pos
         if len(color) == 3: color = [color[0], color[1], color[2], 1]
         self.pixels[y][x*4:x*4+4] = color
-    
+
     def get(self, pos):
         x,y = pos
         return self.pixels[y][x*4:x*4+4]
-    
+
     def save(self, filename):
         info = {'width':self.width, 'height':self.height, 'bitdepth':8}
         pixels = [[int(255*clamp(v,0,1)) for v in row] for row in self.pixels]
@@ -110,7 +110,7 @@ def generate_image1(alpha=False):
 
 if __name__ == "__main__":
     img = Image(256, 256)
-    
+
     for x in range(256):
         for y in range(256):
             r = 1 - x/255
@@ -118,12 +118,12 @@ if __name__ == "__main__":
             b = 0.0
             a = 0.75
             img[x,y] = r,g,b,a
-    
+
     for x in range(256):
         for y in range(256):
             r,g,b,a = img[x,y]
             b += 0.5
             img[x,y] = r,g,b,a
-    
+
     img.save('test_image.png')
 

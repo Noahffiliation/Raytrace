@@ -27,17 +27,17 @@ class Vector:
     Note: not all functionality is provided, and I haven't tested
           every function to be bug-free or correct.
     '''
-    
+
     __slots__ = ['x','y','z']
-    
+
     def __init__(self, vals=None):
         self.set(vals)
     def __repr__(self):
         return '<Vector (%0.4f, %0.4f, %0.4f)>' % (self.x,self.y,self.z)
-    
+
     def __len__(self): return 3
     def __iter__(self): return iter((self.x,self.y,self.z))
-    
+
     def __add__(self, other):
         return Vector((self.x + other.x, self.y + other.y, self.z + other.z))
     def __iadd__(self, other):
@@ -52,7 +52,7 @@ class Vector:
         self.y -= other.y
         self.z -= other.z
         return self
-    
+
     def __mul__(self, other):
         t = type(other)
         if t is float or t is int:
@@ -87,10 +87,10 @@ class Vector:
             self.y /= other.y
             self.z /= other.z
         return self
-    
+
     def __neg__(self):
         return Vector((-self.x, -self.y, -self.z))
-    
+
     def __setitem__(self, idx, v):
         if idx == 0: self.x = v
         elif idx == 1: self.y = v
@@ -99,14 +99,14 @@ class Vector:
         if idx == 0: return self.x
         if idx == 1: return self.y
         return self.z
-    
+
     def set(self, vals):
         if isinstance(vals, Vector):
             self.x,self.y,self.z = vals.x,vals.y,vals.z
         else:
             self.x,self.y,self.z = vals or (0.0,0.0,0.0)
         return self
-    
+
     def normalize(self):
         lsqrd = self.x*self.x + self.y*self.y + self.z*self.z
         if lsqrd == 0: return self
@@ -118,26 +118,26 @@ class Vector:
         self.y /= l
         self.z /= l
         return self
-    
+
     def normalized(self):
         return Vector(self.xyz).normalize()
-    
+
     @property
     def xyz(self): return (self.x, self.y, self.z)
     @xyz.setter
     def xyz(self, v): self.set(v)
-    
+
     @property
     def length(self):
         return sqrt(self.x*self.x + self.y*self.y + self.z*self.z)
     @property
     def length_squared(self):
         return self.x*self.x + self.y*self.y + self.z*self.z
-    
+
     def as_vector(self): return Vector(self.xyz)
     def to_tuple(self): return self.xyz
     def copy(self): return Vector(self.xyz)
-    
+
     def cross(self, other):
         sx,sy,sz = self.x,self.y,self.z
         ox,oy,oz = other.x,other.y,other.z
@@ -145,18 +145,18 @@ class Vector:
         cy = sz*ox-sx*oz
         cz = sx*oy-sy*ox
         return Vector((cx,cy,cz))
-    
+
     def dot(self, other):
         sx,sy,sz = self.x,self.y,self.z
         ox,oy,oz = other.x,other.y,other.z
         return sx*ox + sy*oy + sz*oz
-    
+
     def lerp(self, other, factor:float):
         sx,sy,sz = self.x,self.y,self.z
         ox,oy,oz = other.x,other.y,other.z
         f0,f1 = 1.0 - factor, factor
         return Vector((sx*f0+ox*f1, sy*f0+oy*f1, sz*f0+oz*f1))
-    
+
     def reflected(self, direction):
         direction = direction.normalized()
         dot = direction.dot(self)
@@ -167,9 +167,9 @@ class Point(Vector):
     '''
     A class representing a point in 3D space
     '''
-    
+
     __slots__ = ['x','y','z']
-    
+
     def __init__(self, vals=None):
         self.set(vals)
     def __repr__(self):
@@ -190,9 +190,9 @@ class Direction(Vector):
     '''
     A class representing a direction in 3D space
     '''
-    
+
     __slots__ = ['x','y','z']
-    
+
     def __init__(self, vals=None):
         self.set(vals)
     def __repr__(self):
@@ -215,9 +215,9 @@ class Normal(Vector):
     '''
     A class representing a normal in 3D space
     '''
-    
+
     __slots__ = ['x','y','z']
-    
+
     def __init__(self, vals=None):
         self.set(vals)
     def __repr__(self):
@@ -240,9 +240,9 @@ class Ray:
     '''
     A class representing a ray in 3D space (origin and direction)
     '''
-    
+
     __slots__ = ['e', 'd', 'min', 'max']
-    
+
     @staticmethod
     def from_segment(a:Point, b:Point):
         return Ray(e=a, d=Direction(b - a), max_dist=(b - a).length)
@@ -250,19 +250,19 @@ class Ray:
     @staticmethod
     def from_segment_no_max(a:Point, b:Point):
         return Ray(e=a, d=Direction(b - a))
-    
+
     def __init__(self, e:Point, d:Direction, min_dist:float=0.00005, max_dist:float=float_inf):
         self.e = Point(e)
         self.d = Direction(d)
         self.min = (self.e - self.eval(min_dist)).length
         self.max = float_inf if max_dist==float_inf else (self.e - self.eval(max_dist)).length
-    
+
     def __repr__(self):
         return '<Ray e:(%0.4f, %0.4f, %0.4f), d:(%0.4f, %0.4f, %0.4f)>' % (self.e.x,self.e.y,self.e.z,self.d.x,self.d.y,self.d.z)
-    
+
     def eval(self, t:float): return self.e + self.d * t
     def eval_clamped(self, t:float): return self.e + self.d * clamp(t, 0, self.max)
-    
+
     def valid_t(self, t:float)->bool: return self.min <= t and t <= self.max
 
 
@@ -273,21 +273,21 @@ class Frame:
     major axes (x,y,z)).  This class provides functionality for
     transforming various geometric entities between world and local
     spaces.
-    
+
     w2l_typed, w2l_point, w2l_vector, w2l_direction, w2l_normal, w2l_ray:
         convert given entity from world-space to local-space.
-    
+
     l2w_typed, l2w_point, l2w_vector, l2w_direction, l2w_normal, l2w_ray:
         convert given entity from local-space to world-space.
-    
+
     The w2l_typed and l2w_typed functions call the appropriate
     transformation function based on the type of given parameter.
     Note: there is a performance penalty here, so try calling the
     appropriate function when possible.
     '''
-    
+
     __slots__ = ['o','x','y','z','fn_l2w_typed','fn_w2l_typed']
-    
+
     @staticmethod
     def lookat(eye:Point, center:Point, up:Direction, flipped:bool=True):
         return Frame(o=eye, y=up, z=Direction(center-eye) * (-1 if flipped else 1))
@@ -353,7 +353,7 @@ class Frame:
             self.y.x,self.y.y,self.y.z,
             self.z.x,self.z.y,self.z.z
             )
-    
+
     def _dots(self, v): return (self.x.dot(v), self.y.dot(v), self.z.dot(v))
     def _mults(self, v): return self.x*v.x + self.y*v.y + self.z*v.z
 
@@ -379,7 +379,7 @@ class Frame:
 
     def w2l_normal(self, n:Normal)->Normal: return Normal(self._dots(n))
     def l2w_normal(self, n:Normal)->Normal: return Normal(self._mults(n))
-    
+
     def l2w_ray(self, ray:Ray)->Ray:
         e = self.l2w_point(ray.e)
         d = self.l2w_direction(ray.d)
